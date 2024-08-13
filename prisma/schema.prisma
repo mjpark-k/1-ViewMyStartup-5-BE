@@ -1,0 +1,42 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+model Startup{
+  id            String        @id @default(uuid())
+  catogory_id    String
+  actualInvest  Int           @default(0)
+  simInvest     Int           @default(0)
+  revenue       Int           @default(0)
+  employees     Int           @default(0)
+  description   String        
+  count         Int           @default(0)
+  
+  category      Category      
+  investments   User[]
+}
+enum Category{
+  AAAAA
+  BBBBB
+  CCCCC
+  DDDDD
+  EEEEE
+  FFFFF
+}
+
+model User{
+  id            String        @id @default(uuid())
+  startupId     String
+  name          String        @db.VarChar(10)
+  InvestAmount  Int           @default(0)
+  comment       String
+  startup       Startup       @relation(fields: [startupId],references: [id])
+}
