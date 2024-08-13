@@ -13,7 +13,7 @@
 - 프로젝트 기간: 2024. 08. 13(화) ~ 2024. 09. 03(수)
 
 # 기술 스택
-- FrontEnd: JavaScript, React, scss
+- FrontEnd: JavaScript, React, css
 - BackEnd: Exprss.js
 - Database: MongoDB
 - 공통 Tool: Github, Notion, Discord
