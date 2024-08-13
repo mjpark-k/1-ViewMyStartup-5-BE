@@ -1,0 +1,22 @@
+{
+  "name": "1-viewmystartup-5-be",
+  "version": "1.0.0",
+  "description": "[팀 협업 문서 링크](https://www.notion.so/01cfaff9d9714af3a4efc36e6c2e7b3c?v=6af144344def49b08b4a356710c46dbc)",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^5.18.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "is-uuid": "^1.0.2",
+    "nodemon": "^3.1.4",
+    "prisma": "^5.18.0",
+    "superstruct": "^2.0.2"
+  },
+  "type": "module",
+  "scripts": {
+    "start": "node ./API/API.js"
+  }
+}
