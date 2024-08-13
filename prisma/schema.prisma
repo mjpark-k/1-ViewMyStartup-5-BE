@@ -12,6 +12,7 @@ datasource db {
 
 model Startup{
   id            String        @id @default(uuid())
+  name          String
   actualInvest  Int           @default(0)
   simInvest     Int           @default(0)
   revenue       Int           @default(0)

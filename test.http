@@ -1,0 +1,6 @@
+### 스타트업 조회
+GET http://localhost:3000/startup
+
+### 유저 조회
+
+GET http://localhost:3000/user
