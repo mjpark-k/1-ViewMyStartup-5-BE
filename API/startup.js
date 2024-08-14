@@ -7,7 +7,7 @@ dotenv.config();
 const startup_prisma = new PrismaClient();
 const startup = express();
 startup.use(express.json());
-startup.get("/startup", async (req, res) => {
+startup.get("/startups", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
@@ -59,7 +59,7 @@ startup.get("/startup", async (req, res) => {
   }
 });
 
-startup.get("/startup/:id", async (req, res) => {
+startup.get("/startups/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const startup = await startup_prisma.startup.findUnique({
@@ -84,7 +84,7 @@ startup.get("/startup/:id", async (req, res) => {
   }
 });
 
-startup.post("/startup", async (req, res) => {
+startup.post("/startups", async (req, res) => {
   try {
     const {
       name,
@@ -116,7 +116,7 @@ startup.post("/startup", async (req, res) => {
   }
 });
 
-startup.patch("/startup/:id", async (req, res) => {
+startup.patch("/startups/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const {
@@ -149,7 +149,7 @@ startup.patch("/startup/:id", async (req, res) => {
   }
 });
 
-startup.delete("/startup/:id", async (req, res) => {
+startup.delete("/startups/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const startup = await startup_prisma.startup.delete({ where: { id } });

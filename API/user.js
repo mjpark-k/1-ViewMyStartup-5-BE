@@ -8,7 +8,7 @@ const user_prisma = new PrismaClient();
 const user = express();
 user.use(express.json());
 
-user.get("/startup/:id/user", async (req, res) => {
+user.get("/startups/:id/users", async (req, res) => {
   try {
     const { id } = req.params;
     const users = await user_prisma.user.findMany({
@@ -21,7 +21,7 @@ user.get("/startup/:id/user", async (req, res) => {
   }
 });
 
-user.post("/startup/:id/user", async (req, res) => {
+user.post("/startups/:id/users", async (req, res) => {
   try {
     const { id } = req.params;
     const { name, InvestAmount, comment, password } = req.body;
@@ -56,7 +56,7 @@ user.post("/startup/:id/user", async (req, res) => {
   }
 });
 
-user.patch("/user/:id", async (req, res) => {
+user.patch("/users/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const existingUser = await user_prisma.user.findUnique({
@@ -108,7 +108,7 @@ user.patch("/user/:id", async (req, res) => {
   }
 });
 
-user.delete("/user/:id", async (req, res) => {
+user.delete("/users/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
