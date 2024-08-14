@@ -59,6 +59,31 @@ startup.get("/startup", async (req, res) => {
   }
 });
 
+startup.get("/startup/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const startup = await startup_prisma.startup.findUnique({
+      where: { id },
+    });
+
+    if (startup) {
+      await startup_prisma.startup.update({
+        where: { id },
+        data: {
+          count: {
+            increment: 1,
+          },
+        },
+      });
+    }
+
+    res.status(200).send(startup);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ error: "Internal Server Error" });
+  }
+});
+
 startup.post("/startup", async (req, res) => {
   try {
     const {
