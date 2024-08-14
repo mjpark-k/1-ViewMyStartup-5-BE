@@ -37,6 +37,7 @@ user.post("/startup/:id/user", async (req, res) => {
         },
       }),
       user_prisma.startup.update({
+        // 스타트업 데이터에 투자 금액를 추가
         where: {
           id: id,
         },
@@ -75,6 +76,7 @@ user.patch("/user/:id", async (req, res) => {
       data: { name, InvestAmount, comment, password },
     });
 
+    // 여기서부터 투자금액 차이를 통해서 -해줄지, + 해줄지 정해서 업데이트 합니다.
     if (difference > 0) {
       await user_prisma.startup.update({
         where: {
@@ -124,6 +126,7 @@ user.delete("/user/:id", async (req, res) => {
     });
 
     await user_prisma.startup.update({
+      // 투자자 삭제 -> 투자금액 회수
       where: {
         id: userToDelete.startupId,
       },
