@@ -21,7 +21,7 @@ model Startup{
   count         Int           @default(0)
   
   category      Category      
-  investments   User[]
+  investments   User[]        
 }
 enum Category{
   AAAAA
@@ -39,5 +39,5 @@ model User{
   InvestAmount  Int           @default(0)
   comment       String
   password      String        @db.VarChar(40)
-  startup       Startup       @relation(fields: [startupId],references: [id])
+  startup       Startup       @relation(fields: [startupId],references: [id], onDelete: Cascade)
 }

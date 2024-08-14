@@ -1,6 +1,31 @@
 ### 스타트업 조회
 GET http://localhost:3000/startup
 
+### 스타트업 추가
+POST http://localhost:3000/startup
+Content-Type: application/json
+
+{
+  "name" : "codeit",
+  "revenue" : 300,
+  "employees" : 30,
+  "description" : "코드잇 입니다.",
+  "category" : "AAAAA"
+
+}
+### 스타트업 업데이트
+PATCH http://localhost:3000/startup/d15dbaa6-036a-4941-9593-5c8f02599717
+Content-Type: application/json
+
+{
+  "name": "테스트 기업"
+}
+### 스타트업 삭제
+DELETE http://localhost:3000/startup/d15dbaa6-036a-4941-9593-5c8f02599717
+
+
+
+
 ### 유저 조회
 
 GET http://localhost:3000/user

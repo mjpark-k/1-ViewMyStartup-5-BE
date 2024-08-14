@@ -6,7 +6,7 @@ dotenv.config();
 
 const startup_prisma = new PrismaClient();
 const startup = express();
-
+startup.use(express.json());
 startup.get("/startup", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -33,9 +33,9 @@ startup.get("/startup", async (req, res) => {
       skip: offset,
       take: limit,
       orderBy: orderBy,
+
       include: {
-        // 투자자 목록도 가지고옴
-        investments: true,
+        investments: true /** 투자자 목록도 가지고옴 필요 없다 생각하면 삭제할 예정 */,
       },
     });
 
@@ -53,6 +53,82 @@ startup.get("/startup", async (req, res) => {
         totalPages: totalPages,
       },
     });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ error: "Internal Server Error" });
+  }
+});
+
+startup.post("/startup", async (req, res) => {
+  try {
+    const {
+      name,
+      actualInvest,
+      simInvest,
+      employees,
+      revenue,
+      description,
+      count,
+      category,
+    } = req.body;
+
+    const startup = await startup_prisma.startup.create({
+      data: {
+        name,
+        actualInvest,
+        simInvest,
+        employees,
+        revenue,
+        description,
+        count,
+        category,
+      },
+    });
+    res.status(200).send(startup);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ error: "Internal Server Error" });
+  }
+});
+
+startup.patch("/startup/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      name,
+      actualInvest,
+      simInvest,
+      employees,
+      revenue,
+      description,
+      count,
+      category,
+    } = req.body;
+    const startup = await startup_prisma.startup.update({
+      where: { id },
+      data: {
+        name,
+        actualInvest,
+        simInvest,
+        employees,
+        revenue,
+        description,
+        count,
+        category,
+      },
+    });
+    res.status(200).send(startup);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ error: "Internal Server Error" });
+  }
+});
+
+startup.delete("/startup/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const startup = await startup_prisma.startup.delete({ where: { id } });
+    res.status(200).send(startup);
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: "Internal Server Error" });
