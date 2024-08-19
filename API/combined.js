@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import express from "express";
 import startupApp from "./startup.js";
-import userApp from "./User.js";
+import userApp from "./user.js";
 import cors from "cors";
 
 dotenv.config();
