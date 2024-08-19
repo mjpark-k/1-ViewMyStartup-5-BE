@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import express from "express";
 import { PrismaClient } from "@prisma/client";
+import cors from "cors";
 
 dotenv.config();
 
@@ -10,7 +11,6 @@ startup.use(express.json());
 const user_prisma = new PrismaClient();
 const user = express();
 user.use(express.json());
-const cors = require("cors");
 startup.use(
   cors({
     origin: ["http://localhost:3000", "https://startup-38qa.onrender.com"],
