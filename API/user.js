@@ -144,6 +144,4 @@ user.delete("/users/:id", async (req, res) => {
   }
 });
 
-user.listen(3000, () => {
-  console.log("Server is running");
-});
+export default user;
