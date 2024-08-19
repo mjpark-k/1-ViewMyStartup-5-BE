@@ -1,8 +1,10 @@
 ### 스타트업 조회
-GET http://localhost:3000/startup
+GET http://localhost:3000/startups
 
+### 특정 스타트업 조회
+GET http://localhost:3000/startups/3d95433b-7f3c-438a-827a-4378f0949e13
 ### 스타트업 추가
-POST http://localhost:3000/startup
+POST http://localhost:3000/startups
 Content-Type: application/json
 
 {
@@ -14,18 +16,43 @@ Content-Type: application/json
 
 }
 ### 스타트업 업데이트
-PATCH http://localhost:3000/startup/d15dbaa6-036a-4941-9593-5c8f02599717
+PATCH http://localhost:3000/startups/d15dbaa6-036a-4941-9593-5c8f02599717
 Content-Type: application/json
 
 {
   "name": "테스트 기업"
 }
 ### 스타트업 삭제
-DELETE http://localhost:3000/startup/d15dbaa6-036a-4941-9593-5c8f02599717
+DELETE http://localhost:3000/startups/d15dbaa6-036a-4941-9593-5c8f02599717
 
 
 
 
-### 유저 조회
+### 투자자 조회
 
-GET http://localhost:3000/user
+GET http://localhost:3000/startups/cce20910-d319-4842-874b-36497fea1a24/users
+
+
+### 투자 추가
+
+POST http://localhost:3000/startups/22940fe9-c5b0-4687-8e49-e27f73f34c32/users
+Content-Type: application/json
+
+{
+  "name" : "민수",
+  "InvestAmount": 1004,
+  "comment": "탕탕후루후루",
+  "password": "8888"
+}
+
+### 투자 수정
+PATCH http://localhost:3000/users/ad96b780-4dd1-41b0-8596-6d7e39fff1c3
+Content-Type: application/json
+
+{
+  "name" : "큰손 투자자",
+  "InvestAmount": 50000
+}
+
+### 투자 삭제
+DELETE http://localhost:3000/users/4b9bd961-7c58-4db2-9409-06a2e1c7e3e7
