@@ -160,6 +160,4 @@ startup.delete("/startups/:id", async (req, res) => {
   }
 });
 
-startup.listen(3000, () => {
-  console.log("Server is running");
-});
+export default startup;
