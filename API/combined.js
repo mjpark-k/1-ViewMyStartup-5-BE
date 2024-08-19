@@ -10,6 +10,17 @@ startup.use(express.json());
 const user_prisma = new PrismaClient();
 const user = express();
 user.use(express.json());
+const cors = require("cors");
+startup.use(
+  cors({
+    origin: ["http://localhost:3000", "https://startup-38qa.onrender.com"],
+  })
+);
+user.use(
+  cors({
+    origin: ["http://localhost:3000", "https://startup-38qa.onrender.com"],
+  })
+);
 startup.get("/startups", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
