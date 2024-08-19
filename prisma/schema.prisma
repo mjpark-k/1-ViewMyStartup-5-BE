@@ -23,6 +23,7 @@ model Startup{
   category      Category      
   investments   User[]        
 }
+
 enum Category{
   AAAAA
   BBBBB
