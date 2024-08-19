@@ -17,6 +17,6 @@
   },
   "type": "module",
   "scripts": {
-    "start": "node ./API/API.js"
+  "start": "concurrently \"node ./API/startup.js\" \"node ./API/user.js\""
   }
 }
