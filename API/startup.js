@@ -26,6 +26,16 @@ startup.get("/startups", async (req, res) => {
       orderBy = { simInvest: sortOder };
     } else if (sortBy === "employees") {
       orderBy = { employees: sortOder };
+    } else if (sortBy === "revenue") {
+      orderBy = { revenue: sortOder };
+    } else if (sortBy === "count") {
+      orderBy = { count: sortOder };
+    } else if (sortBy === "category") {
+      orderBy = { category: sortOder };
+    } else if (sortBy === "createdAt") {
+      orderBy = { createdAt: sortOder };
+    } else if (sortBy === "updatedAt") {
+      orderBy = { updatedAt: sortOder };
     }
 
     const startups = await startup_prisma.startup.findMany({
