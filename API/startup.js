@@ -11,31 +11,37 @@ startup.get("/startups", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-    const keyword = req.query.keyword || "";
     const sortBy = req.query.sortBy || "";
-    const sortOder = req.query.sortOder === "desc" ? "desc" : "asc";
+    const sortOrder = req.query.sortOrder === "desc" ? "desc" : "asc";
 
     const offset = (page - 1) * limit;
+    
+    const keywordInput = req.query.keyword;
+    let searchQuery = {};
 
-    const searchQuery = keyword ? { name: { contains: keyword } } : {};
+    if (Array.isArray(keywordInput)) {
+      searchQuery = { name: { in: keywordInput } }; 
+    } else if (typeof keywordInput === 'string' && keywordInput) {
+      searchQuery = { name: { contains: keywordInput } };
+    }
 
     let orderBy = {};
     if (sortBy === "actualInvest") {
-      orderBy = { actualInvest: sortOder };
+      orderBy = { actualInvest: sortOrder };
     } else if (sortBy === "simInvest") {
-      orderBy = { simInvest: sortOder };
+      orderBy = { simInvest: sortOrder };
     } else if (sortBy === "employees") {
-      orderBy = { employees: sortOder };
+      orderBy = { employees: sortOrder };
     } else if (sortBy === "revenue") {
-      orderBy = { revenue: sortOder };
+      orderBy = { revenue: sortOrder };
     } else if (sortBy === "count") {
-      orderBy = { count: sortOder };
+      orderBy = { count: sortOrder };
     } else if (sortBy === "category") {
-      orderBy = { category: sortOder };
+      orderBy = { category: sortOrder };
     } else if (sortBy === "createdAt") {
-      orderBy = { createdAt: sortOder };
+      orderBy = { createdAt: sortOrder };
     } else if (sortBy === "updatedAt") {
-      orderBy = { updatedAt: sortOder };
+      orderBy = { updatedAt: sortOrder };
     }
 
     const startups = await startup_prisma.startup.findMany({
