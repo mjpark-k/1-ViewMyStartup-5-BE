@@ -1,6 +1,6 @@
-import dotenv from "dotenv";
-import express from "express";
-import { PrismaClient } from "@prisma/client";
+import dotenv from 'dotenv';
+import express from 'express';
+import { PrismaClient } from '@prisma/client';
 
 dotenv.config();
 
@@ -8,20 +8,35 @@ const user_prisma = new PrismaClient();
 const user = express();
 user.use(express.json());
 
-user.get("/startups/:id/users", async (req, res) => {
+user.get('/startups/:id/users', async (req, res) => {
   try {
     const { id } = req.params;
+    const { page = 1, limit = 5 } = req.query;
+
     const users = await user_prisma.user.findMany({
       where: { startupId: id },
     });
-    res.status(200).send(users);
+
+    /** 데이터 순위 추가 후 rankUserData로 send */
+    users.sort((a, b) => b.InvestAmount - a.InvestAmount);
+
+    const investAmountLank = users.map((data, index) => ({
+      ...data,
+      rank: index + 1,
+    }));
+    const pageIndex = (page - 1) * limit;
+    const limitIndex = page * limit;
+    const rankUserData = investAmountLank.slice(pageIndex, limitIndex);
+    /**------------------------------------------------------------- */
+
+    res.status(200).send({ users: users, rankUserData: rankUserData });
   } catch (error) {
     console.log(error);
-    res.status(500).send({ error: "Internal Server Error" });
+    res.status(500).send({ error: 'Internal Server Error' });
   }
 });
 
-user.post("/startups/:id/users", async (req, res) => {
+user.post('/startups/:id/users', async (req, res) => {
   try {
     const { id } = req.params;
     const { name, InvestAmount, comment, password } = req.body;
@@ -52,11 +67,11 @@ user.post("/startups/:id/users", async (req, res) => {
     res.status(200).send({ user, updatedStartup });
   } catch (error) {
     console.log(error);
-    res.status(500).send({ error: "Internal Server Error" });
+    res.status(500).send({ error: 'Internal Server Error' });
   }
 });
 
-user.patch("/users/:id", async (req, res) => {
+user.patch('/users/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const existingUser = await user_prisma.user.findUnique({
@@ -64,7 +79,7 @@ user.patch("/users/:id", async (req, res) => {
     });
 
     if (!existingUser) {
-      return res.status(404).send({ error: "User not found" });
+      return res.status(404).send({ error: 'User not found' });
     }
 
     const { name, InvestAmount, comment, password } = req.body;
@@ -104,11 +119,11 @@ user.patch("/users/:id", async (req, res) => {
     res.status(200).send(user);
   } catch (error) {
     console.log(error);
-    res.status(500).send({ error: "Internal Server Error" });
+    res.status(500).send({ error: 'Internal Server Error' });
   }
 });
 
-user.delete("/users/:id", async (req, res) => {
+user.delete('/users/:id', async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -118,7 +133,7 @@ user.delete("/users/:id", async (req, res) => {
     });
 
     if (!userToDelete) {
-      return res.status(404).send({ error: "User not found" });
+      return res.status(404).send({ error: 'User not found' });
     }
 
     const user = await user_prisma.user.delete({
@@ -140,7 +155,7 @@ user.delete("/users/:id", async (req, res) => {
     res.status(200).send(user);
   } catch (error) {
     console.log(error);
-    res.status(500).send({ error: "Internal Server Error" });
+    res.status(500).send({ error: 'Internal Server Error' });
   }
 });
 
