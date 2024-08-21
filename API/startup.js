@@ -11,57 +11,58 @@ startup.get("/startups", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
+    const keyword = req.query.keyword || "";
     const sortBy = req.query.sortBy || "";
-    const sortOrder = req.query.sortOrder === "desc" ? "desc" : "asc";
+    const sortOder = req.query.sortOder === "desc" ? "desc" : "asc";
 
     const offset = (page - 1) * limit;
-    
-    const keywordInput = req.query.keyword;
-    let searchQuery = {};
 
-    if (Array.isArray(keywordInput)) {
-      searchQuery = { name: { in: keywordInput } }; 
-    } else if (typeof keywordInput === 'string' && keywordInput) {
-      searchQuery = { name: { contains: keywordInput } };
-    }
+    const searchQuery = keyword ? { name: { contains: keyword } } : {};
 
+    // 전체 데이터에 대해 정렬 기준에 따라 랭킹 계산
     let orderBy = {};
     if (sortBy === "actualInvest") {
-      orderBy = { actualInvest: sortOrder };
+      orderBy = { actualInvest: sortOder };
     } else if (sortBy === "simInvest") {
-      orderBy = { simInvest: sortOrder };
+      orderBy = { simInvest: sortOder };
     } else if (sortBy === "employees") {
-      orderBy = { employees: sortOrder };
+      orderBy = { employees: sortOder };
     } else if (sortBy === "revenue") {
-      orderBy = { revenue: sortOrder };
+      orderBy = { revenue: sortOder };
     } else if (sortBy === "count") {
-      orderBy = { count: sortOrder };
+      orderBy = { count: sortOder };
     } else if (sortBy === "category") {
-      orderBy = { category: sortOrder };
+      orderBy = { category: sortOder };
     } else if (sortBy === "createdAt") {
-      orderBy = { createdAt: sortOrder };
+      orderBy = { createdAt: sortOder };
     } else if (sortBy === "updatedAt") {
-      orderBy = { updatedAt: sortOrder };
+      orderBy = { updatedAt: sortOder };
     }
 
-    const startups = await startup_prisma.startup.findMany({
-      where: searchQuery,
-      skip: offset,
-      take: limit,
+    // 전체 데이터 가져오기
+    const allStartups = await startup_prisma.startup.findMany({
       orderBy: orderBy,
-
-      include: {
-        investments: true /** 투자자 목록도 가지고옴 필요 없다 생각하면 삭제할 예정 */,
-      },
     });
 
-    const totalStartup = await startup_prisma.startup.count({
-      where: searchQuery,
-    });
+    // 랭킹 부여
+    const rankedStartups = allStartups.map((startup, index) => ({
+      ...startup,
+      rank: index + 1, // 랭킹 부여
+    }));
+
+    // 키워드로 필터링 및 페이징 처리
+    const filteredStartups = rankedStartups.filter((startup) =>
+      startup.name.includes(keyword)
+    );
+
+    const paginatedStartups = filteredStartups.slice(offset, offset + limit);
+
+    const totalStartup = filteredStartups.length;
     const totalPages = Math.ceil(totalStartup / limit);
 
+    // 응답
     res.status(200).send({
-      data: startups,
+      data: paginatedStartups,
       meta: {
         total: totalStartup,
         page: page,
