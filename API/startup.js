@@ -11,13 +11,18 @@ startup.get("/startups", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-    const keyword = req.query.keyword || "";
     const sortBy = req.query.sortBy || "";
     const sortOder = req.query.sortOder === "desc" ? "desc" : "asc";
 
     const offset = (page - 1) * limit;
+    const keywordInput = req.query.keyword;
+    let searchQuery = {};
 
-    const searchQuery = keyword ? { name: { contains: keyword } } : {};
+    if (Array.isArray(keywordInput)) {
+      searchQuery = { name: { in: keywordInput } };  // 여러 키워드에 대한 검색
+    } else if (typeof keywordInput === 'string' && keywordInput) {
+      searchQuery = { name: { contains: keywordInput } };  // 단일 키워드에 대한 검색
+    }
 
     // 전체 데이터에 대해 정렬 기준에 따라 랭킹 계산
     let orderBy = {};
