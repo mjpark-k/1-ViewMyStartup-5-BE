@@ -57,7 +57,7 @@ startup.get("/startups", async (req, res) => {
 
     // 키워드로 필터링 및 페이징 처리
     const filteredStartups = rankedStartups.filter((startup) =>
-      startup.name.includes(keyword)
+      startup.name.includes(keywordInput)
     );
 
     const paginatedStartups = filteredStartups.slice(offset, offset + limit);
