@@ -71,11 +71,12 @@ user.post('/startups/:id/users', async (req, res) => {
   }
 });
 
-user.patch('/users/:id', async (req, res) => {
+user.patch('/startups/:startupId/users/:userId', async (req, res) => {
   try {
-    const { id } = req.params;
+    const { startupId, userId } = req.params;
+
     const existingUser = await user_prisma.user.findUnique({
-      where: { id },
+      where: { id: userId, startupId: startupId },
     });
 
     if (!existingUser) {
@@ -87,7 +88,7 @@ user.patch('/users/:id', async (req, res) => {
     const difference = InvestAmount - existingUser.InvestAmount;
 
     const user = await user_prisma.user.update({
-      where: { id },
+      where: { id: userId },
       data: { name, InvestAmount, comment, password },
     });
 
@@ -123,12 +124,12 @@ user.patch('/users/:id', async (req, res) => {
   }
 });
 
-user.delete('/users/:id', async (req, res) => {
+user.delete('/startups/:startupId/users/:userId', async (req, res) => {
   try {
-    const { id } = req.params;
+    const { startupId, userId } = req.params;
 
     const userToDelete = await user_prisma.user.findUnique({
-      where: { id },
+      where: { id: userId, startupId: startupId },
       select: { InvestAmount: true, startupId: true },
     });
 
@@ -137,7 +138,7 @@ user.delete('/users/:id', async (req, res) => {
     }
 
     const user = await user_prisma.user.delete({
-      where: { id },
+      where: { id: userId },
     });
 
     await user_prisma.startup.update({
