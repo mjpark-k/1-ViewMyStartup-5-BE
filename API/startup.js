@@ -13,15 +13,16 @@ startup.get("/startups", async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const sortBy = req.query.sortBy || "";
     const sortOrder = req.query.sortOrder === "desc" ? "desc" : "asc";
+    const includeRanking = req.query.includeRanking === "true";
 
     const offset = (page - 1) * limit;
-    
+
     const keywordInput = req.query.keyword;
     let searchQuery = {};
 
     if (Array.isArray(keywordInput)) {
-      searchQuery = { name: { in: keywordInput } }; 
-    } else if (typeof keywordInput === 'string' && keywordInput) {
+      searchQuery = { name: { in: keywordInput } };
+    } else if (typeof keywordInput === "string" && keywordInput) {
       searchQuery = { name: { contains: keywordInput } };
     }
 
@@ -44,19 +45,6 @@ startup.get("/startups", async (req, res) => {
       orderBy = { updatedAt: sortOrder };
     }
 
-    // 1. 전체 데이터를 가져와서 랭킹을 계산
-    const allStartups = await startup_prisma.startup.findMany({
-      orderBy: orderBy,
-      select: { id: true },  // 랭킹을 계산하기 위해 ID만 선택
-    });
-
-    // 2. 전체 데이터에서 랭킹을 매김
-    const rankings = allStartups.map((startup, index) => ({
-      id: startup.id,
-      rank: index + 1, // 랭킹은 1부터 시작
-    }));
-
-    // 3. 필터링된 데이터를 가져옴
     const startups = await startup_prisma.startup.findMany({
       where: searchQuery,
       skip: offset,
@@ -67,11 +55,48 @@ startup.get("/startups", async (req, res) => {
       },
     });
 
-    // 4. 필터링된 데이터에 랭킹을 포함시킴
-    const startupsWithRankings = startups.map((startup) => {
-      const rank = rankings.find((r) => r.id === startup.id)?.rank;
-      return { ...startup, rank: rank };
-    });
+    let startupsWithRankings = startups;
+
+    if (includeRanking) {
+      const allStartups = await startup_prisma.startup.findMany({
+        orderBy: orderBy,
+        select: { id: true }, // 랭킹을 계산하기 위해 ID만 선택
+      });
+
+      const rankings = allStartups.map((startup, index) => ({
+        id: startup.id,
+        rank: index + 1, // 랭킹은 1부터 시작
+      }));
+
+      startupsWithRankings = startups.map((startup) => {
+        const rank = rankings.find((r) => r.id === startup.id)?.rank;
+        return { ...startup, rank: rank };
+      });
+
+      const startupRanks = startupsWithRankings.map((s) => s.rank);
+      const minRank = Math.min(...startupRanks);
+      const maxRank = Math.max(...startupRanks);
+
+      const extendedRankings = rankings.filter(
+        (r) => r.rank >= minRank - 2 && r.rank <= maxRank + 2
+      );
+
+      const extendedStartups = await startup_prisma.startup.findMany({
+        where: {
+          id: { in: extendedRankings.map((r) => r.id) },
+        },
+        orderBy: orderBy,
+        include: {
+          investments: true,
+        },
+      });
+
+      
+      startupsWithRankings = extendedStartups.map((startup) => {
+        const rank = rankings.find((r) => r.id === startup.id)?.rank;
+        return { ...startup, rank: rank };
+      });
+    }
 
     const totalStartup = await startup_prisma.startup.count({
       where: searchQuery,
