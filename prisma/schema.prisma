@@ -25,12 +25,10 @@ model Startup{
 }
 
 enum Category{
-  AAAAA
-  BBBBB
-  CCCCC
-  DDDDD
-  EEEEE
-  FFFFF
+  EDU_TECH
+  MACHINERY
+  SOLUTION
+  ECOMMERCE
 }
 
 model User{
