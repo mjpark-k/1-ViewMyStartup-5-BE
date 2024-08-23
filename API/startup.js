@@ -7,6 +7,12 @@ dotenv.config();
 const startup_prisma = new PrismaClient();
 const startup = express();
 startup.use(express.json());
+const categoryMapping = {
+  에듀테크: "EDU_TECH",
+  기계장비: "MACHINERY",
+  솔루션: "SOLUTION",
+  전자상거래: "ECOMMERCE",
+};
 startup.get("/startups", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -24,6 +30,15 @@ startup.get("/startups", async (req, res) => {
       searchQuery = { name: { in: keywordInput } };
     } else if (typeof keywordInput === "string" && keywordInput) {
       searchQuery = { name: { contains: keywordInput } };
+    }
+
+    if (req.query.category) {
+      const categoryInput = req.query.category;
+      const categoryEnum = categoryMapping[categoryInput];
+      if (!categoryEnum) {
+        return res.status(400).send({ error: "Invalid category value" });
+      }
+      searchQuery.category = categoryEnum;
     }
 
     let orderBy = {};
@@ -45,6 +60,7 @@ startup.get("/startups", async (req, res) => {
       orderBy = { updatedAt: sortOrder };
     }
 
+    // 1. 필터링된 데이터를 가져옴
     const startups = await startup_prisma.startup.findMany({
       where: searchQuery,
       skip: offset,
@@ -58,21 +74,25 @@ startup.get("/startups", async (req, res) => {
     let startupsWithRankings = startups;
 
     if (includeRanking) {
+      // 2. 전체 데이터를 가져와서 랭킹을 계산
       const allStartups = await startup_prisma.startup.findMany({
         orderBy: orderBy,
         select: { id: true }, // 랭킹을 계산하기 위해 ID만 선택
       });
 
+      // 3. 전체 데이터에서 랭킹을 매김
       const rankings = allStartups.map((startup, index) => ({
         id: startup.id,
         rank: index + 1, // 랭킹은 1부터 시작
       }));
 
+      // 4. 필터링된 데이터에 랭킹을 포함시킴
       startupsWithRankings = startups.map((startup) => {
         const rank = rankings.find((r) => r.id === startup.id)?.rank;
         return { ...startup, rank: rank };
       });
 
+      // 5. 특정 스타트업의 순위를 기준으로 앞뒤 2순위를 포함한 데이터를 가져옴
       const startupRanks = startupsWithRankings.map((s) => s.rank);
       const minRank = Math.min(...startupRanks);
       const maxRank = Math.max(...startupRanks);
@@ -91,7 +111,7 @@ startup.get("/startups", async (req, res) => {
         },
       });
 
-      
+      // 6. extendedStartups에 해당하는 랭킹 정보 추가
       startupsWithRankings = extendedStartups.map((startup) => {
         const rank = rankings.find((r) => r.id === startup.id)?.rank;
         return { ...startup, rank: rank };
