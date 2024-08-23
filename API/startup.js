@@ -7,12 +7,7 @@ dotenv.config();
 const startup_prisma = new PrismaClient();
 const startup = express();
 startup.use(express.json());
-const categoryMapping = {
-  에듀테크: "EDU_TECH",
-  기계장비: "MACHINERY",
-  솔루션: "SOLUTION",
-  전자상거래: "ECOMMERCE",
-};
+
 startup.get("/startups", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -32,14 +27,6 @@ startup.get("/startups", async (req, res) => {
       searchQuery = { name: { contains: keywordInput } };
     }
 
-    if (req.query.category) {
-      const categoryInput = req.query.category;
-      const categoryEnum = categoryMapping[categoryInput];
-      if (!categoryEnum) {
-        return res.status(400).send({ error: "Invalid category value" });
-      }
-      searchQuery.category = categoryEnum;
-    }
 
     let orderBy = {};
     if (sortBy === "actualInvest") {
