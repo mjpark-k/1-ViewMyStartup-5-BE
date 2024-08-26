@@ -1,53 +1,53 @@
-import dotenv from "dotenv";
-import express from "express";
-import { PrismaClient } from "@prisma/client";
+import dotenv from 'dotenv';
+import express from 'express';
+import { PrismaClient } from '@prisma/client';
 
 dotenv.config();
 
 const startup_prisma = new PrismaClient();
 const startup = express();
 startup.use(express.json());
-startup.get("/startups", async (req, res) => {
+startup.get('/startups', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-    const sortBy = req.query.sortBy || "";
-    const sortOrder = req.query.sortOrder === "desc" ? "desc" : "asc";
+    const sortBy = req.query.sortBy || '';
+    const sortOrder = req.query.sortOrder === 'desc' ? 'desc' : 'asc';
 
     const offset = (page - 1) * limit;
-    
+
     const keywordInput = req.query.keyword;
     let searchQuery = {};
 
     if (Array.isArray(keywordInput)) {
-      searchQuery = { name: { in: keywordInput } }; 
+      searchQuery = { name: { in: keywordInput } };
     } else if (typeof keywordInput === 'string' && keywordInput) {
       searchQuery = { name: { contains: keywordInput } };
     }
 
     let orderBy = {};
-    if (sortBy === "actualInvest") {
+    if (sortBy === 'actualInvest') {
       orderBy = { actualInvest: sortOrder };
-    } else if (sortBy === "simInvest") {
+    } else if (sortBy === 'simInvest') {
       orderBy = { simInvest: sortOrder };
-    } else if (sortBy === "employees") {
+    } else if (sortBy === 'employees') {
       orderBy = { employees: sortOrder };
-    } else if (sortBy === "revenue") {
+    } else if (sortBy === 'revenue') {
       orderBy = { revenue: sortOrder };
-    } else if (sortBy === "count") {
+    } else if (sortBy === 'count') {
       orderBy = { count: sortOrder };
-    } else if (sortBy === "category") {
+    } else if (sortBy === 'category') {
       orderBy = { category: sortOrder };
-    } else if (sortBy === "createdAt") {
+    } else if (sortBy === 'createdAt') {
       orderBy = { createdAt: sortOrder };
-    } else if (sortBy === "updatedAt") {
+    } else if (sortBy === 'updatedAt') {
       orderBy = { updatedAt: sortOrder };
     }
 
     // 1. 전체 데이터를 가져와서 랭킹을 계산
     const allStartups = await startup_prisma.startup.findMany({
       orderBy: orderBy,
-      select: { id: true },  // 랭킹을 계산하기 위해 ID만 선택
+      select: { id: true }, // 랭킹을 계산하기 위해 ID만 선택
     });
 
     // 2. 전체 데이터에서 랭킹을 매김
@@ -78,8 +78,15 @@ startup.get("/startups", async (req, res) => {
     });
     const totalPages = Math.ceil(totalStartup / limit);
 
+    const alldata = await startup_prisma.startup.findMany({
+      where: searchQuery,
+      skip: (page - 1) * 5,
+      take: 5,
+    });
+
     res.status(200).send({
       data: startupsWithRankings,
+      alldata: alldata,
       meta: {
         total: totalStartup,
         page: page,
@@ -89,11 +96,11 @@ startup.get("/startups", async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(500).send({ error: "Internal Server Error" });
+    res.status(500).send({ error: 'Internal Server Error' });
   }
 });
 
-startup.get("/startups/:id", async (req, res) => {
+startup.get('/startups/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const startup = await startup_prisma.startup.findUnique({
@@ -114,11 +121,11 @@ startup.get("/startups/:id", async (req, res) => {
     res.status(200).send(startup);
   } catch (error) {
     console.log(error);
-    res.status(500).send({ error: "Internal Server Error" });
+    res.status(500).send({ error: 'Internal Server Error' });
   }
 });
 
-startup.post("/startups", async (req, res) => {
+startup.post('/startups', async (req, res) => {
   try {
     const {
       name,
@@ -146,11 +153,11 @@ startup.post("/startups", async (req, res) => {
     res.status(200).send(startup);
   } catch (error) {
     console.log(error);
-    res.status(500).send({ error: "Internal Server Error" });
+    res.status(500).send({ error: 'Internal Server Error' });
   }
 });
 
-startup.patch("/startups/:id", async (req, res) => {
+startup.patch('/startups/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const {
@@ -179,18 +186,18 @@ startup.patch("/startups/:id", async (req, res) => {
     res.status(200).send(startup);
   } catch (error) {
     console.log(error);
-    res.status(500).send({ error: "Internal Server Error" });
+    res.status(500).send({ error: 'Internal Server Error' });
   }
 });
 
-startup.delete("/startups/:id", async (req, res) => {
+startup.delete('/startups/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const startup = await startup_prisma.startup.delete({ where: { id } });
     res.status(200).send(startup);
   } catch (error) {
     console.log(error);
-    res.status(500).send({ error: "Internal Server Error" });
+    res.status(500).send({ error: 'Internal Server Error' });
   }
 });
 
