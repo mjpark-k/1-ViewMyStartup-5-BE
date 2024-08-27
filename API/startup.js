@@ -110,15 +110,8 @@ startup.get("/startups", async (req, res) => {
     });
     const totalPages = Math.ceil(totalStartup / limit);
 
-    const alldata = await startup_prisma.startup.findMany({
-      where: searchQuery,
-      skip: (page - 1) * 5,
-      take: 5,
-    });
-
     res.status(200).send({
       data: startupsWithRankings,
-      alldata: alldata,
       meta: {
         total: totalStartup,
         page: page,
