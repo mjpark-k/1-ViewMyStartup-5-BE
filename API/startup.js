@@ -1,6 +1,6 @@
-import dotenv from "dotenv";
-import express from "express";
-import { PrismaClient } from "@prisma/client";
+import dotenv from 'dotenv';
+import express from 'express';
+import { PrismaClient } from '@prisma/client';
 
 dotenv.config();
 
@@ -29,21 +29,21 @@ startup.get("/startups", async (req, res) => {
 
 
     let orderBy = {};
-    if (sortBy === "actualInvest") {
+    if (sortBy === 'actualInvest') {
       orderBy = { actualInvest: sortOrder };
-    } else if (sortBy === "simInvest") {
+    } else if (sortBy === 'simInvest') {
       orderBy = { simInvest: sortOrder };
-    } else if (sortBy === "employees") {
+    } else if (sortBy === 'employees') {
       orderBy = { employees: sortOrder };
-    } else if (sortBy === "revenue") {
+    } else if (sortBy === 'revenue') {
       orderBy = { revenue: sortOrder };
-    } else if (sortBy === "count") {
+    } else if (sortBy === 'count') {
       orderBy = { count: sortOrder };
-    } else if (sortBy === "category") {
+    } else if (sortBy === 'category') {
       orderBy = { category: sortOrder };
-    } else if (sortBy === "createdAt") {
+    } else if (sortBy === 'createdAt') {
       orderBy = { createdAt: sortOrder };
-    } else if (sortBy === "updatedAt") {
+    } else if (sortBy === 'updatedAt') {
       orderBy = { updatedAt: sortOrder };
     }
 
@@ -110,8 +110,15 @@ startup.get("/startups", async (req, res) => {
     });
     const totalPages = Math.ceil(totalStartup / limit);
 
+    const alldata = await startup_prisma.startup.findMany({
+      where: searchQuery,
+      skip: (page - 1) * 5,
+      take: 5,
+    });
+
     res.status(200).send({
       data: startupsWithRankings,
+      alldata: alldata,
       meta: {
         total: totalStartup,
         page: page,
@@ -121,11 +128,11 @@ startup.get("/startups", async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(500).send({ error: "Internal Server Error" });
+    res.status(500).send({ error: 'Internal Server Error' });
   }
 });
 
-startup.get("/startups/:id", async (req, res) => {
+startup.get('/startups/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const startup = await startup_prisma.startup.findUnique({
@@ -146,11 +153,11 @@ startup.get("/startups/:id", async (req, res) => {
     res.status(200).send(startup);
   } catch (error) {
     console.log(error);
-    res.status(500).send({ error: "Internal Server Error" });
+    res.status(500).send({ error: 'Internal Server Error' });
   }
 });
 
-startup.post("/startups", async (req, res) => {
+startup.post('/startups', async (req, res) => {
   try {
     const {
       name,
@@ -178,11 +185,11 @@ startup.post("/startups", async (req, res) => {
     res.status(200).send(startup);
   } catch (error) {
     console.log(error);
-    res.status(500).send({ error: "Internal Server Error" });
+    res.status(500).send({ error: 'Internal Server Error' });
   }
 });
 
-startup.patch("/startups/:id", async (req, res) => {
+startup.patch('/startups/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const {
@@ -211,18 +218,18 @@ startup.patch("/startups/:id", async (req, res) => {
     res.status(200).send(startup);
   } catch (error) {
     console.log(error);
-    res.status(500).send({ error: "Internal Server Error" });
+    res.status(500).send({ error: 'Internal Server Error' });
   }
 });
 
-startup.delete("/startups/:id", async (req, res) => {
+startup.delete('/startups/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const startup = await startup_prisma.startup.delete({ where: { id } });
     res.status(200).send(startup);
   } catch (error) {
     console.log(error);
-    res.status(500).send({ error: "Internal Server Error" });
+    res.status(500).send({ error: 'Internal Server Error' });
   }
 });
 
