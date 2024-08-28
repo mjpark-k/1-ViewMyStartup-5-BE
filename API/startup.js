@@ -130,18 +130,6 @@ startup.get("/startups/:id", async (req, res) => {
     const startup = await startup_prisma.startup.findUnique({
       where: { id },
     });
-
-    if (startup) {
-      await startup_prisma.startup.update({
-        where: { id },
-        data: {
-          count: {
-            increment: 1,
-          },
-        },
-      });
-    }
-
     res.status(200).send(startup);
   } catch (error) {
     console.log(error);
