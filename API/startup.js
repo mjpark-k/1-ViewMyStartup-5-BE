@@ -90,6 +90,8 @@ startup.get("/startups", async (req, res) => {
           id: { in: extendedRankings.map((r) => r.id) },
         },
         orderBy: orderBy,
+        skip: offset,
+        take: limit,
         include: {
           investments: true,
         },
