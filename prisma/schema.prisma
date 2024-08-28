@@ -18,7 +18,8 @@ model Startup{
   revenue       Int           @default(0)
   employees     Int           @default(0)
   description   String        
-  count         Int           @default(0)
+  mycount       Int           @default(0)
+  comparecount  Int           @default(0)
   category      String        @default("기본값")
   image         String      
   investments   User[]        
