@@ -181,6 +181,7 @@ startup.patch("/startups/:id", async (req, res) => {
       description,
       count,
       category,
+      comparecount,
     } = req.body;
     const startup = await startup_prisma.startup.update({
       where: { id },
@@ -193,6 +194,7 @@ startup.patch("/startups/:id", async (req, res) => {
         description,
         count,
         category,
+        comparecount,
       },
     });
     res.status(200).send(startup);
