@@ -1,6 +1,3 @@
--- CreateEnum
-CREATE TYPE "Category" AS ENUM ('AAAAA', 'BBBBB', 'CCCCC', 'DDDDD', 'EEEEE', 'FFFFF');
-
 -- CreateTable
 CREATE TABLE "Startup" (
     "id" TEXT NOT NULL,
@@ -11,7 +8,8 @@ CREATE TABLE "Startup" (
     "employees" INTEGER NOT NULL DEFAULT 0,
     "description" TEXT NOT NULL,
     "count" INTEGER NOT NULL DEFAULT 0,
-    "category" "Category" NOT NULL,
+    "category" TEXT NOT NULL DEFAULT '에듀테크',
+    "image" TEXT NOT NULL,
 
     CONSTRAINT "Startup_pkey" PRIMARY KEY ("id")
 );
@@ -29,4 +27,4 @@ CREATE TABLE "User" (
 );
 
 -- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_startupId_fkey" FOREIGN KEY ("startupId") REFERENCES "Startup"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "User" ADD CONSTRAINT "User_startupId_fkey" FOREIGN KEY ("startupId") REFERENCES "Startup"("id") ON DELETE CASCADE ON UPDATE CASCADE;
