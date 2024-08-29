@@ -15,6 +15,7 @@ startup.get('/startups', async (req, res) => {
     const sortBy = req.query.sortBy || '';
     const sortOrder = req.query.sortOrder === 'desc' ? 'desc' : 'asc';
     const includeRanking = req.query.includeRanking === 'true';
+    const compareRanking = req.query.compareRanking || false;
 
     const offset = (page - 1) * limit;
 
@@ -79,11 +80,9 @@ startup.get('/startups', async (req, res) => {
       const minRank = Math.min(...startupRanks);
       const maxRank = Math.max(...startupRanks);
 
-      const extendedRankings = keywordInput
-        ? startupsWithRankings
-        : rankings.filter(
-            (r) => r.rank >= minRank - 2 && r.rank <= maxRank + 2
-          );
+      const extendedRankings = compareRanking
+        ? rankings.filter((r) => r.rank >= minRank - 2 && r.rank <= maxRank + 2)
+        : startupsWithRankings;
 
       const extendedStartups = await startup_prisma.startup.findMany({
         where: {
