@@ -79,9 +79,11 @@ startup.get('/startups', async (req, res) => {
       const minRank = Math.min(...startupRanks);
       const maxRank = Math.max(...startupRanks);
 
-      const extendedRankings = rankings.filter(
-        (r) => r.rank >= minRank - 2 && r.rank <= maxRank + 2
-      );
+      const extendedRankings = keywordInput
+        ? startupsWithRankings
+        : rankings.filter(
+            (r) => r.rank >= minRank - 2 && r.rank <= maxRank + 2
+          );
 
       const extendedStartups = await startup_prisma.startup.findMany({
         where: {
