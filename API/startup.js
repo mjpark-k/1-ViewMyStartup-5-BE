@@ -59,7 +59,7 @@ startup.get('/startups', async (req, res) => {
     if (includeRanking) {
       // 2. 전체 데이터를 가져와서 랭킹을 계산
       const allStartups = await startup_prisma.startup.findMany({
-        orderBy: orderBy,
+        orderBy: [orderBy, { id: 'desc' }],
         select: { id: true }, // 랭킹을 계산하기 위해 ID만 선택
       });
 
@@ -88,7 +88,7 @@ startup.get('/startups', async (req, res) => {
         where: {
           id: { in: extendedRankings.map((r) => r.id) },
         },
-        orderBy: orderBy,
+        orderBy: [orderBy, { id: 'desc' }],
         skip: offset,
         take: limit,
         include: {
